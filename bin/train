@@ -1,0 +1,2 @@
+#!/bin/bash -eu
+java -server -Xmx2G  -Dfile.encoding=UTF-8 -cp target/vowpal_scallion-0.0.1-SNAPSHOT-selfcontained.jar premise.vw.Train $@

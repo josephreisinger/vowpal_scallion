@@ -1,0 +1,23 @@
+<configuration scan="true" scanPeriod="30 seconds">
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>
+        %-5level [%date{yyyy-MM-dd'T'HH:mm:ss.SSS}] [%thread] %logger: %message%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <if condition='isNull("logback.levels")'>
+    <then>
+
+      <logger name="premise.vw"                         level="debug"/>
+
+    </then>
+  </if>
+
+  <root level="${logback.levels:-debug}">
+    <appender-ref ref="STDOUT"/>
+  </root>
+
+</configuration>

@@ -1,0 +1,96 @@
+project:
+  modelVersion: '4.0.0'
+
+  groupId:    'premise'
+  artifactId: 'vowpal_scallion'
+  version:    '0.0.1-SNAPSHOT'
+
+  scm:
+    connection:          'scm:git:ssh://git@github.com:josephreisinger/vowpal_scallion.git'
+    developerConnection: 'scm:git:ssh://git@github.com:josephreisinger/vowpal_scallion.git'
+    url:                 'http://github.com/josephreisinger/vowpal_scallion'
+
+  repositories/repository:
+    - { id: 'clojars',      url: 'http://clojars.org/repo' }
+    - { id: 'sonatype',     url: 'http://oss.sonatype.org/content/repositories/releases' }
+    - { id: 'scala-tools',  url: 'https://oss.sonatype.org/content/groups/scala-tools' }
+    - { id: 'codahale',     url: 'http://repo.codahale.com' }
+    - { id: 'metamx',       url: 'https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local' }
+    - { id: 'marketcetera', url: 'http://repo.marketcetera.org/maven' } # For javax.jms:jms, com.sun.jdmk:jmxtools, com.sun.jdmk:jmxri
+    - { id: 'Twttr', url: 'http://maven.twttr.com/' } # util-eval
+    - { id: 'typesafe', url: 'http://repo.typesafe.com/typesafe/releases/' } # AKKA
+
+
+
+  properties:
+    scala.version:                '2.9.1'
+    project.build.sourceEncoding: 'UTF-8'
+
+  dependencies/dependency:
+
+    # Logging:
+    # loglady is a scala api to slf4j, which is a generic logging api for the jvm
+    - { groupId: 'org.eintr.loglady',     artifactId: 'loglady_${scala.version}', version: '1.0.0' }
+    - { groupId: 'org.slf4j',             artifactId: 'slf4j-api',                version: '1.6.6' }
+
+    - { groupId: 'ch.qos.logback',        artifactId: 'logback-classic',          version: '1.0.3',  optional: true }
+    - { groupId: 'janino',                artifactId: 'janino',                   version: '2.5.10', optional: true }
+    # Route log4j and JCL through slf4j, for any deps that still use them (see http://www.slf4j.org/legacy.html):
+    #   1. Include bridge jars (optional:true to exclude transitively)
+    - { groupId: 'org.slf4j',             artifactId: 'log4j-over-slf4j',         version: '1.6.6',  optional: true }
+    - { groupId: 'org.slf4j',             artifactId: 'jcl-over-slf4j',           version: '1.6.6',  optional: true }
+
+    # twitter eval
+    - { groupId: 'com.twitter',         artifactId: 'util-eval',           version: '5.3.6' }
+
+    # argot
+    - { groupId: 'org.clapper',         artifactId: 'argot_${scala.version}',           version: '0.4' }
+
+
+  build:
+    sourceDirectory: 'src/main'
+    plugins/plugin:
+
+      - groupId:    'org.apache.maven.plugins'
+        artifactId: 'maven-compiler-plugin'
+        version:    '2.3.2'
+        configuration:
+          source: '1.6'
+          target: '1.6'
+
+      - groupId:    'org.apache.maven.plugins'
+        artifactId: 'maven-dependency-plugin'
+        version:    '2.2'
+        executions/execution:
+          - phase:         process-test-resources
+            goals/goal:    [copy-dependencies]
+            configuration: { outputDirectory: '${project.build.directory}/dependencies' }
+
+      - groupId:    'org.scala-tools'
+        artifactId: 'maven-scala-plugin'
+        version:    '2.15.2'
+        executions/execution:
+          - goals/goal: [compile, testCompile]
+        configuration:
+          args/arg: ['-unchecked', '-deprecation']
+
+      - groupId:    'org.apache.maven.plugins'
+        artifactId: 'maven-shade-plugin'
+        version:    '1.6'
+        executions/execution:
+          - phase:         package
+            goals/goal:    [shade]
+            configuration: { shadedArtifactAttached: true, shadedClassifierName: 'selfcontained' }
+        configuration:
+          filters/filter:
+            - artifact:         '*:*'
+              excludes/exclude: ['META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA']
+
+      - groupId:    'org.apache.maven.plugins'
+        artifactId: 'maven-surefire-plugin'
+        version:    '2.8.1'
+        configuration:
+          useFile:                 false
+          argLine:                 '-Dfile.encoding=UTF-8'
+          systemPropertyVariables: { user.timezone: 'UTC' }
+          includes/include:        ['**/*Spec.class']

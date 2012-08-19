@@ -27,10 +27,21 @@ object Train extends Logging {
       val eval = new Eval
       val model_config = eval[VWConfig](new File(model_file))
 
-      val vw = new VW(model_config)
+      // Run an sgd version of the model
+      val vw_sgd = new VW(model_config)
 
       // Each training line is actually an Iterable of chunks of a full training instance
-      vw.train(Source.fromInputStream(System.in)("UTF-8").getLines.map(x=>Seq(x)))
+      vw_sgd.train(Source.fromInputStream(System.in)("UTF-8").getLines.map(x=>Seq(x)))
+
+
+      // Now run the same data through bfgs (for fun) using the sgd model as input
+      val vw_bfgs = new VW(
+        model_config
+          .copy(bfgs=true, incremental=true, passes=5)
+      )
+      vw_bfgs.train(Source.fromInputStream(System.in)("UTF-8").getLines.map(x=>Seq(x)))
+
+      log.info("done training.")
     }
 
     catch {

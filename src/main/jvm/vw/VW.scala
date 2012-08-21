@@ -1,6 +1,6 @@
 package premise.vw
 
-import premise.common.default._
+import premise.vw.common.default._
 
 import scala.collection.mutable
 

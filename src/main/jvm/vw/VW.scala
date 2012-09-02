@@ -130,12 +130,12 @@ case class VWConfig(
   def vw_test_command(mf: String): String = "%s -p stdout -t -i %s" format (vw_base_command, mf)
 }
 
-
-trait VWBase[@specialized(Int,Double) T] extends Logging {
+trait VWConfigured {
     val config: VWConfig
+}
 
-    def parse_output_line(raw_line: String): T
-
+// Generic base class that supports model training (But not prediction)
+trait VWTrainable extends VWConfigured with Logging {
     // Create a new model and train it using the specified stream
     def train(input: Iterator[Iterable[String]]) {
         prepare_training
@@ -169,9 +169,15 @@ trait VWBase[@specialized(Int,Double) T] extends Logging {
         if (model_file.exists) model_file.delete
       }
     }
+}
+
+// Break out the typed components from the hierarchy
+trait VW[@specialized(Int,Double) T] extends VWTrainable with Logging {
+
+    def parse_output_line(raw_line: String): T
 
     // Run prediction over an iterator and batch up the results
-    def batch_predict(input: Iterator[Iterable[String]]) = {
+    def batch_predict(input: Iterator[Iterable[String]]): Iterable[T] = {
         // Calling exitValue Blocks until complete
         log.debug("running predict [%s]" format config.vw_test_command)
         val outs = new mutable.ArrayBuffer[T]
@@ -194,27 +200,28 @@ trait VWBase[@specialized(Int,Double) T] extends Logging {
     }
 }
 
-trait VWFactory[T] {
-  def make(vw_config: VWConfig): VWBase[T]
+// XXX: so we're using VWTrainable here to be polymorphic and avoid serious type-injection all over the place. but this is gross. HALP!
+trait VWFactory {
+  def make(vw_config: VWConfig): VWTrainable
 }
 
-trait VWBinaryClassifierFactory extends VWFactory[Double] {
-  def make(vw_config: VWConfig) = new VWBase[Double] {
+trait VWBinaryClassifierFactory extends VWFactory {
+  def make(vw_config: VWConfig): VWTrainable = new VW[Double] {
     val config = vw_config
     def parse_output_line(raw_line: String): Double = raw_line.toDouble
   }
 }
 
-trait VWMulticlassClassifierFactory extends VWFactory[String] {
+trait VWMulticlassClassifierFactory extends VWFactory {
   val label_map: Map[Int,String]
-  def make(vw_config: VWConfig) = new VWBase[String] {
+  def make(vw_config: VWConfig): VWTrainable = new VW[String] {
     val config = vw_config
     def parse_output_line(raw_line: String): String = label_map(raw_line.toDouble.toInt)
   }
 }
 
-trait VWLDAFactory extends VWFactory[Iterable[Double]] {
-  def make(vw_config: VWConfig) = new VWBase[Iterable[Double]] {
+trait VWLDAFactory extends VWFactory {
+  def make(vw_config: VWConfig): VWTrainable = new VW[Iterable[Double]] {
     val config = vw_config
     val topics = config.lda.lda
     def parse_output_line(raw_line: String): Iterable[Double] = {

@@ -67,7 +67,7 @@ case class VWConfig(
   lazy val model_file_path = new ji.File(full_working_dir, model_filename).toString
   lazy val cache_file_path = new ji.File(full_working_dir, cache_filename).toString
 
-  def validate = {
+  def validate {
     // Do some sanity checking for compatability between models
     if (node != null) {
       assert(total != null)
@@ -131,7 +131,7 @@ case class VWConfig(
 }
 
 
-trait VWBase[@specialized(Int) T] extends Logging {
+trait VWBase[@specialized(Int,Double) T] extends Logging {
     val config: VWConfig
 
     def parse_output_line(raw_line: String): T
@@ -194,24 +194,35 @@ trait VWBase[@specialized(Int) T] extends Logging {
     }
 }
 
-
-class VW(val config: VWConfig) extends VWBase[Double] {
-  def parse_output_line(raw_line: String): Double = raw_line.toDouble
+trait VWFactory[T] {
+  def make(vw_config: VWConfig): VWBase[T]
 }
 
-trait VWMulticlass extends VWBase[String] {
+trait VWBinaryClassifierFactory extends VWFactory[Double] {
+  def make(vw_config: VWConfig) = new VWBase[Double] {
+    val config = vw_config
+    def parse_output_line(raw_line: String): Double = raw_line.toDouble
+  }
 }
 
-// Will work in theory
-/*
- *
- *class VWLDA(config: VWConfig) extends VWBase[Seq[Double]] {
- *    override def parse_prediction_line(raw_line: String) = {
- *        val tokens = raw_line.split(" ")
- *        // log.info("parse_pred [%s]".format(raw_line))
- *        // XXX: there is a weird extra space in there
- *        assert(tokens.length == topics + 2, { log.error("Incorrect prediction token sequence: [%s]".format(tokens mkString " ")) })
- *        process_prediction(tokens.last, (tokens take topics) map (_.toDouble))
- *    }
- *}
- */
+trait VWMulticlassClassifierFactory extends VWFactory[String] {
+  val label_map: Map[Int,String]
+  def make(vw_config: VWConfig) = new VWBase[String] {
+    val config = vw_config
+    def parse_output_line(raw_line: String): String = label_map(raw_line.toDouble.toInt)
+  }
+}
+
+trait VWLDAFactory extends VWFactory[Iterable[Double]] {
+  def make(vw_config: VWConfig) = new VWBase[Iterable[Double]] {
+    val config = vw_config
+    val topics = config.lda.lda
+    def parse_output_line(raw_line: String): Iterable[Double] = {
+        val tokens = raw_line.split(" ")
+        // log.info("parse_pred [%s]".format(raw_line))
+        // XXX: there is a weird extra space in there
+        assert(tokens.length == topics + 2, { log.error("Incorrect prediction token sequence: [%s]".format(tokens mkString " ")) })
+        (tokens take topics).map(_.toDouble)
+    }
+  }
+}

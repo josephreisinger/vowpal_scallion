@@ -216,7 +216,7 @@ trait VWMulticlassClassifierFactory extends VWFactory {
   val label_map: Map[String,String]
   def make(vw_config: VWConfig): VWTrainable = new VW[String] {
     val config = vw_config
-    def parse_output_line(raw_line: String): String = label_map(raw_line.toDouble.toInt)
+    def parse_output_line(raw_line: String): String = label_map(raw_line.toDouble.toInt.toString) // ugh
   }
 }
 

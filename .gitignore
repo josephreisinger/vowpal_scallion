@@ -1,13 +1,39 @@
+# mvny
+pom.yaml.xml
+
+# General
+*.jar
 *.class
 *.log
+*.tar.gz
 
-# sbt specific
-dist/*
+# mvn
 target/
+
+# sbt
+target/
+dist/
 lib_managed/
 src_managed/
 project/boot/
 project/plugins/project/
+
+# IntelliJ
+.idea
+*.iml
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# py
+*.pyc
+build/
+dist/
+*.egg-info/
+
+# vim undo
+.*.un~
 
 # Scala-IDE specific
 .scala_dependencies

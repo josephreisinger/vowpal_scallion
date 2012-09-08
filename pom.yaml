@@ -11,16 +11,7 @@ project:
     url:                 'http://github.com/josephreisinger/vowpal_scallion'
 
   repositories/repository:
-    - { id: 'clojars',      url: 'http://clojars.org/repo' }
-    - { id: 'sonatype',     url: 'http://oss.sonatype.org/content/repositories/releases' }
-    - { id: 'scala-tools',  url: 'https://oss.sonatype.org/content/groups/scala-tools' }
-    - { id: 'codahale',     url: 'http://repo.codahale.com' }
-    - { id: 'metamx',       url: 'https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local' }
-    - { id: 'marketcetera', url: 'http://repo.marketcetera.org/maven' } # For javax.jms:jms, com.sun.jdmk:jmxtools, com.sun.jdmk:jmxri
-    - { id: 'Twttr', url: 'http://maven.twttr.com/' } # util-eval
-    - { id: 'typesafe', url: 'http://repo.typesafe.com/typesafe/releases/' } # AKKA
-
-
+    - { id: 'premise', url: 'https://premise.artifactoryonline.com/premise/public' }
 
   properties:
     scala.version:                '2.9.1'

@@ -296,66 +296,10 @@
   <repositories>
     <repository>
       <url>
-        http://clojars.org/repo
+        https://premise.artifactoryonline.com/premise/public
       </url>
       <id>
-        clojars
-      </id>
-    </repository>
-    <repository>
-      <url>
-        http://oss.sonatype.org/content/repositories/releases
-      </url>
-      <id>
-        sonatype
-      </id>
-    </repository>
-    <repository>
-      <url>
-        https://oss.sonatype.org/content/groups/scala-tools
-      </url>
-      <id>
-        scala-tools
-      </id>
-    </repository>
-    <repository>
-      <url>
-        http://repo.codahale.com
-      </url>
-      <id>
-        codahale
-      </id>
-    </repository>
-    <repository>
-      <url>
-        https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local
-      </url>
-      <id>
-        metamx
-      </id>
-    </repository>
-    <repository>
-      <url>
-        http://repo.marketcetera.org/maven
-      </url>
-      <id>
-        marketcetera
-      </id>
-    </repository>
-    <repository>
-      <url>
-        http://maven.twttr.com/
-      </url>
-      <id>
-        Twttr
-      </id>
-    </repository>
-    <repository>
-      <url>
-        http://repo.typesafe.com/typesafe/releases/
-      </url>
-      <id>
-        typesafe
+        premise
       </id>
     </repository>
   </repositories>

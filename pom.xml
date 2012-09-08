@@ -130,25 +130,6 @@
     <plugins>
       <plugin>
         <version>
-          2.3.2
-        </version>
-        <groupId>
-          org.apache.maven.plugins
-        </groupId>
-        <configuration>
-          <source>
-            1.6
-          </source>
-          <target>
-            1.6
-          </target>
-        </configuration>
-        <artifactId>
-          maven-compiler-plugin
-        </artifactId>
-      </plugin>
-      <plugin>
-        <version>
           2.2
         </version>
         <groupId>
@@ -176,8 +157,27 @@
         </artifactId>
       </plugin>
       <plugin>
+        <version>
+          2.3.2
+        </version>
+        <groupId>
+          org.apache.maven.plugins
+        </groupId>
+        <configuration>
+          <source>
+            1.6
+          </source>
+          <target>
+            1.6
+          </target>
+        </configuration>
         <artifactId>
-          maven-scala-plugin
+          maven-compiler-plugin
+        </artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>
+          scala-maven-plugin
         </artifactId>
         <configuration>
           <args>
@@ -188,9 +188,12 @@
               -deprecation
             </arg>
           </args>
+          <recompileMode>
+            incremental
+          </recompileMode>
         </configuration>
         <version>
-          2.15.2
+          3.1.0
         </version>
         <executions>
           <execution>
@@ -205,8 +208,63 @@
           </execution>
         </executions>
         <groupId>
-          org.scala-tools
+          net.alchim31.maven
         </groupId>
+      </plugin>
+      <plugin>
+        <version>
+          2.2
+        </version>
+        <groupId>
+          org.apache.maven.plugins
+        </groupId>
+        <executions>
+          <execution>
+            <phase>
+              verify
+            </phase>
+            <goals>
+              <goal>
+                jar-no-fork
+              </goal>
+            </goals>
+            <id>
+              attach-sources
+            </id>
+          </execution>
+        </executions>
+        <artifactId>
+          maven-source-plugin
+        </artifactId>
+      </plugin>
+      <plugin>
+        <version>
+          2.8.1
+        </version>
+        <groupId>
+          org.apache.maven.plugins
+        </groupId>
+        <configuration>
+          <useFile>
+            false
+          </useFile>
+          <systemPropertyVariables>
+            <user.timezone>
+              UTC
+            </user.timezone>
+          </systemPropertyVariables>
+          <includes>
+            <include>
+              **/*Spec.class
+            </include>
+          </includes>
+          <argLine>
+            -Dfile.encoding=UTF-8
+          </argLine>
+        </configuration>
+        <artifactId>
+          maven-surefire-plugin
+        </artifactId>
       </plugin>
       <plugin>
         <artifactId>
@@ -261,37 +319,22 @@
       </plugin>
       <plugin>
         <version>
-          2.8.1
+          2.7
         </version>
         <groupId>
           org.apache.maven.plugins
         </groupId>
-        <configuration>
-          <useFile>
-            false
-          </useFile>
-          <systemPropertyVariables>
-            <user.timezone>
-              UTC
-            </user.timezone>
-          </systemPropertyVariables>
-          <includes>
-            <include>
-              **/*Spec.class
-            </include>
-          </includes>
-          <argLine>
-            -Dfile.encoding=UTF-8
-          </argLine>
-        </configuration>
         <artifactId>
-          maven-surefire-plugin
+          maven-deploy-plugin
         </artifactId>
       </plugin>
     </plugins>
     <sourceDirectory>
       src/main
     </sourceDirectory>
+    <testSourceDirectory>
+      src/test
+    </testSourceDirectory>
   </build>
   <repositories>
     <repository>

@@ -37,17 +37,10 @@ project:
     # argot
     - { groupId: 'org.clapper',         artifactId: 'argot_${scala.version}',           version: '0.4' }
 
-
   build:
-    sourceDirectory: 'src/main'
+    sourceDirectory:     'src/main'
+    testSourceDirectory: 'src/test'
     plugins/plugin:
-
-      - groupId:    'org.apache.maven.plugins'
-        artifactId: 'maven-compiler-plugin'
-        version:    '2.3.2'
-        configuration:
-          source: '1.6'
-          target: '1.6'
 
       - groupId:    'org.apache.maven.plugins'
         artifactId: 'maven-dependency-plugin'
@@ -57,13 +50,38 @@ project:
             goals/goal:    [copy-dependencies]
             configuration: { outputDirectory: '${project.build.directory}/dependencies' }
 
-      - groupId:    'org.scala-tools'
-        artifactId: 'maven-scala-plugin'
-        version:    '2.15.2'
+      - groupId:    'org.apache.maven.plugins'
+        artifactId: 'maven-compiler-plugin'
+        version:    '2.3.2'
+        configuration:
+          source: '1.6'
+          target: '1.6'
+
+      - groupId:    'net.alchim31.maven'
+        artifactId: 'scala-maven-plugin'
+        version:    '3.1.0'
         executions/execution:
           - goals/goal: [compile, testCompile]
         configuration:
-          args/arg: ['-unchecked', '-deprecation']
+          args/arg:      ['-unchecked', '-deprecation']
+          recompileMode: incremental
+
+      - groupId:    'org.apache.maven.plugins'
+        artifactId: 'maven-source-plugin'
+        version:    '2.2'
+        executions/execution:
+          - id:         attach-sources
+            phase:      verify
+            goals/goal: [jar-no-fork]
+
+      - groupId:    'org.apache.maven.plugins'
+        artifactId: 'maven-surefire-plugin'
+        version:    '2.8.1'
+        configuration:
+          useFile:                 false
+          argLine:                 '-Dfile.encoding=UTF-8'
+          systemPropertyVariables: { user.timezone: 'UTC' }
+          includes/include:        ['**/*Spec.class']
 
       - groupId:    'org.apache.maven.plugins'
         artifactId: 'maven-shade-plugin'
@@ -78,10 +96,5 @@ project:
               excludes/exclude: ['META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA']
 
       - groupId:    'org.apache.maven.plugins'
-        artifactId: 'maven-surefire-plugin'
-        version:    '2.8.1'
-        configuration:
-          useFile:                 false
-          argLine:                 '-Dfile.encoding=UTF-8'
-          systemPropertyVariables: { user.timezone: 'UTC' }
-          includes/include:        ['**/*Spec.class']
+        artifactId: 'maven-deploy-plugin'
+        version:    '2.7'

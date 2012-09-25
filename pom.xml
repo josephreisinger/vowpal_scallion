@@ -124,7 +124,7 @@
     premise
   </groupId>
   <version>
-    0.0.1-SNAPSHOT
+    0.0.1
   </version>
   <build>
     <plugins>

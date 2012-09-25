@@ -3,7 +3,7 @@ project:
 
   groupId:    'premise'
   artifactId: 'vowpal_scallion'
-  version:    '0.0.1-SNAPSHOT'
+  version:    '0.0.1'
 
   scm:
     connection:          'scm:git:ssh://git@github.com:josephreisinger/vowpal_scallion.git'

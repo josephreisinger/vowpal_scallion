@@ -197,14 +197,30 @@
         </version>
         <executions>
           <execution>
+            <phase>
+              process-resources
+            </phase>
             <goals>
               <goal>
                 compile
               </goal>
+            </goals>
+            <id>
+              scala-compile-first
+            </id>
+          </execution>
+          <execution>
+            <phase>
+              process-test-resources
+            </phase>
+            <goals>
               <goal>
                 testCompile
               </goal>
             </goals>
+            <id>
+              scala-test-compile
+            </id>
           </execution>
         </executions>
         <groupId>

@@ -61,7 +61,12 @@ project:
         artifactId: 'scala-maven-plugin'
         version:    '3.1.0'
         executions/execution:
-          - goals/goal: [compile, testCompile]
+          - id:         scala-compile-first
+            phase:      process-resources
+            goals/goal: [compile]
+          - id:         scala-test-compile
+            phase:      process-test-resources
+            goals/goal: [testCompile]
         configuration:
           args/arg:      ['-unchecked', '-deprecation']
           recompileMode: incremental

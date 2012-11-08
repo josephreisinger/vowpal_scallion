@@ -3,7 +3,7 @@ project:
 
   groupId:    'premise'
   artifactId: 'vowpal_scallion'
-  version:    '0.0.1-SNAPSHOT'
+  version:    '0.0.2-SNAPSHOT'
 
   scm:
     connection:          'scm:git:ssh://git@github.com:josephreisinger/vowpal_scallion.git'
@@ -11,16 +11,7 @@ project:
     url:                 'http://github.com/josephreisinger/vowpal_scallion'
 
   repositories/repository:
-    - { id: 'clojars',      url: 'http://clojars.org/repo' }
-    - { id: 'sonatype',     url: 'http://oss.sonatype.org/content/repositories/releases' }
-    - { id: 'scala-tools',  url: 'https://oss.sonatype.org/content/groups/scala-tools' }
-    - { id: 'codahale',     url: 'http://repo.codahale.com' }
-    - { id: 'metamx',       url: 'https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local' }
-    - { id: 'marketcetera', url: 'http://repo.marketcetera.org/maven' } # For javax.jms:jms, com.sun.jdmk:jmxtools, com.sun.jdmk:jmxri
-    - { id: 'Twttr', url: 'http://maven.twttr.com/' } # util-eval
-    - { id: 'typesafe', url: 'http://repo.typesafe.com/typesafe/releases/' } # AKKA
-
-
+    - { id: 'premise', url: 'https://premise.artifactoryonline.com/premise/public' }
 
   properties:
     scala.version:                '2.9.1'
@@ -46,17 +37,10 @@ project:
     # argot
     - { groupId: 'org.clapper',         artifactId: 'argot_${scala.version}',           version: '0.4' }
 
-
   build:
-    sourceDirectory: 'src/main'
+    sourceDirectory:     'src/main'
+    testSourceDirectory: 'src/test'
     plugins/plugin:
-
-      - groupId:    'org.apache.maven.plugins'
-        artifactId: 'maven-compiler-plugin'
-        version:    '2.3.2'
-        configuration:
-          source: '1.6'
-          target: '1.6'
 
       - groupId:    'org.apache.maven.plugins'
         artifactId: 'maven-dependency-plugin'
@@ -66,13 +50,43 @@ project:
             goals/goal:    [copy-dependencies]
             configuration: { outputDirectory: '${project.build.directory}/dependencies' }
 
-      - groupId:    'org.scala-tools'
-        artifactId: 'maven-scala-plugin'
-        version:    '2.15.2'
-        executions/execution:
-          - goals/goal: [compile, testCompile]
+      - groupId:    'org.apache.maven.plugins'
+        artifactId: 'maven-compiler-plugin'
+        version:    '2.3.2'
         configuration:
-          args/arg: ['-unchecked', '-deprecation']
+          source: '1.6'
+          target: '1.6'
+
+      - groupId:    'net.alchim31.maven'
+        artifactId: 'scala-maven-plugin'
+        version:    '3.1.0'
+        executions/execution:
+          - id:         scala-compile-first
+            phase:      process-resources
+            goals/goal: [compile]
+          - id:         scala-test-compile
+            phase:      process-test-resources
+            goals/goal: [testCompile]
+        configuration:
+          args/arg:      ['-unchecked', '-deprecation']
+          recompileMode: incremental
+
+      - groupId:    'org.apache.maven.plugins'
+        artifactId: 'maven-source-plugin'
+        version:    '2.2'
+        executions/execution:
+          - id:         attach-sources
+            phase:      verify
+            goals/goal: [jar-no-fork]
+
+      - groupId:    'org.apache.maven.plugins'
+        artifactId: 'maven-surefire-plugin'
+        version:    '2.8.1'
+        configuration:
+          useFile:                 false
+          argLine:                 '-Dfile.encoding=UTF-8'
+          systemPropertyVariables: { user.timezone: 'UTC' }
+          includes/include:        ['**/*Spec.class']
 
       - groupId:    'org.apache.maven.plugins'
         artifactId: 'maven-shade-plugin'
@@ -87,10 +101,5 @@ project:
               excludes/exclude: ['META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA']
 
       - groupId:    'org.apache.maven.plugins'
-        artifactId: 'maven-surefire-plugin'
-        version:    '2.8.1'
-        configuration:
-          useFile:                 false
-          argLine:                 '-Dfile.encoding=UTF-8'
-          systemPropertyVariables: { user.timezone: 'UTC' }
-          includes/include:        ['**/*Spec.class']
+        artifactId: 'maven-deploy-plugin'
+        version:    '2.7'

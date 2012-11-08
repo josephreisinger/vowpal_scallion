@@ -124,29 +124,10 @@
     premise
   </groupId>
   <version>
-    0.0.1-SNAPSHOT
+    0.0.2-SNAPSHOT
   </version>
   <build>
     <plugins>
-      <plugin>
-        <version>
-          2.3.2
-        </version>
-        <groupId>
-          org.apache.maven.plugins
-        </groupId>
-        <configuration>
-          <source>
-            1.6
-          </source>
-          <target>
-            1.6
-          </target>
-        </configuration>
-        <artifactId>
-          maven-compiler-plugin
-        </artifactId>
-      </plugin>
       <plugin>
         <version>
           2.2
@@ -176,8 +157,27 @@
         </artifactId>
       </plugin>
       <plugin>
+        <version>
+          2.3.2
+        </version>
+        <groupId>
+          org.apache.maven.plugins
+        </groupId>
+        <configuration>
+          <source>
+            1.6
+          </source>
+          <target>
+            1.6
+          </target>
+        </configuration>
         <artifactId>
-          maven-scala-plugin
+          maven-compiler-plugin
+        </artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>
+          scala-maven-plugin
         </artifactId>
         <configuration>
           <args>
@@ -188,25 +188,99 @@
               -deprecation
             </arg>
           </args>
+          <recompileMode>
+            incremental
+          </recompileMode>
         </configuration>
         <version>
-          2.15.2
+          3.1.0
         </version>
         <executions>
           <execution>
+            <phase>
+              process-resources
+            </phase>
             <goals>
               <goal>
                 compile
               </goal>
+            </goals>
+            <id>
+              scala-compile-first
+            </id>
+          </execution>
+          <execution>
+            <phase>
+              process-test-resources
+            </phase>
+            <goals>
               <goal>
                 testCompile
               </goal>
             </goals>
+            <id>
+              scala-test-compile
+            </id>
           </execution>
         </executions>
         <groupId>
-          org.scala-tools
+          net.alchim31.maven
         </groupId>
+      </plugin>
+      <plugin>
+        <version>
+          2.2
+        </version>
+        <groupId>
+          org.apache.maven.plugins
+        </groupId>
+        <executions>
+          <execution>
+            <phase>
+              verify
+            </phase>
+            <goals>
+              <goal>
+                jar-no-fork
+              </goal>
+            </goals>
+            <id>
+              attach-sources
+            </id>
+          </execution>
+        </executions>
+        <artifactId>
+          maven-source-plugin
+        </artifactId>
+      </plugin>
+      <plugin>
+        <version>
+          2.8.1
+        </version>
+        <groupId>
+          org.apache.maven.plugins
+        </groupId>
+        <configuration>
+          <useFile>
+            false
+          </useFile>
+          <systemPropertyVariables>
+            <user.timezone>
+              UTC
+            </user.timezone>
+          </systemPropertyVariables>
+          <includes>
+            <include>
+              **/*Spec.class
+            </include>
+          </includes>
+          <argLine>
+            -Dfile.encoding=UTF-8
+          </argLine>
+        </configuration>
+        <artifactId>
+          maven-surefire-plugin
+        </artifactId>
       </plugin>
       <plugin>
         <artifactId>
@@ -261,101 +335,30 @@
       </plugin>
       <plugin>
         <version>
-          2.8.1
+          2.7
         </version>
         <groupId>
           org.apache.maven.plugins
         </groupId>
-        <configuration>
-          <useFile>
-            false
-          </useFile>
-          <systemPropertyVariables>
-            <user.timezone>
-              UTC
-            </user.timezone>
-          </systemPropertyVariables>
-          <includes>
-            <include>
-              **/*Spec.class
-            </include>
-          </includes>
-          <argLine>
-            -Dfile.encoding=UTF-8
-          </argLine>
-        </configuration>
         <artifactId>
-          maven-surefire-plugin
+          maven-deploy-plugin
         </artifactId>
       </plugin>
     </plugins>
     <sourceDirectory>
       src/main
     </sourceDirectory>
+    <testSourceDirectory>
+      src/test
+    </testSourceDirectory>
   </build>
   <repositories>
     <repository>
       <url>
-        http://clojars.org/repo
+        https://premise.artifactoryonline.com/premise/public
       </url>
       <id>
-        clojars
-      </id>
-    </repository>
-    <repository>
-      <url>
-        http://oss.sonatype.org/content/repositories/releases
-      </url>
-      <id>
-        sonatype
-      </id>
-    </repository>
-    <repository>
-      <url>
-        https://oss.sonatype.org/content/groups/scala-tools
-      </url>
-      <id>
-        scala-tools
-      </id>
-    </repository>
-    <repository>
-      <url>
-        http://repo.codahale.com
-      </url>
-      <id>
-        codahale
-      </id>
-    </repository>
-    <repository>
-      <url>
-        https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local
-      </url>
-      <id>
-        metamx
-      </id>
-    </repository>
-    <repository>
-      <url>
-        http://repo.marketcetera.org/maven
-      </url>
-      <id>
-        marketcetera
-      </id>
-    </repository>
-    <repository>
-      <url>
-        http://maven.twttr.com/
-      </url>
-      <id>
-        Twttr
-      </id>
-    </repository>
-    <repository>
-      <url>
-        http://repo.typesafe.com/typesafe/releases/
-      </url>
-      <id>
-        typesafe
+        premise
       </id>
     </repository>
   </repositories>

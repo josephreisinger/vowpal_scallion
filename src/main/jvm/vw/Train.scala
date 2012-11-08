@@ -21,15 +21,15 @@ object Train extends Logging {
       parser.parse(args)
 
       val model_file = model_file_opt.value.get
-
       log.info("model=[%s]" format (model_file))
 
-      val eval = new Eval
-      val model_config = eval[VWConfig](new File(model_file))
+      // Load the model configuration
+      val model_config: VWConfig = new Eval()(new File(model_file))
 
+      // Create a new vw factory for a binary classifier
       val vw_factory = new VWBinaryClassifierFactory { }
 
-      // Run an sgd version of the model
+      // Run an sgd version of the model (make a vw model with this config)
       val vw_sgd = vw_factory.make(model_config)
 
       // Each training line is actually an Iterable of chunks of a full training instance

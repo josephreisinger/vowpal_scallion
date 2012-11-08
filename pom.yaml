@@ -41,7 +41,7 @@ project:
     - { groupId: 'org.slf4j',             artifactId: 'jcl-over-slf4j',           version: '1.6.6',  optional: true }
 
     # twitter eval
-    - { groupId: 'com.twitter',         artifactId: 'util-eval',           version: '5.3.6' }
+    - { groupId: 'com.twitter',         artifactId: 'util-eval',           version: '5.3.13' }
 
     # argot
     - { groupId: 'org.clapper',         artifactId: 'argot_${scala.version}',           version: '0.4' }
